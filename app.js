@@ -20,7 +20,7 @@ const SYMBOLS_COUNT ={
     D: 80
 }
 
-const Symbol_VALUES = {
+const SYMBOL_VALUES = {
     A: 20,
     B: 15,
     C: 10,
@@ -33,9 +33,52 @@ const spin = () => {
         for (let i = 0; i< count; i++) {
             symbols.push(symbol)
         }
-    }
+    } //is imutable, should probably be a const and outside this function
     const rows = [];
-    for (let i=0; i< COLUMNS; i++) {}
+    for (let i=0; i< COLUMNS; i++) {
+        rows.push([]);
+        const rowSymbols = [...symbols];
+        for(let j=0; j<ROWS; j++){
+            let randomIndex = Math.floor(Math.random() * rowSymbols.length);
+            const selectedSymbol = rowSymbols[randomIndex];// Check if pop is a better choice here
+            rows[i].push(selectedSymbol);
+            rowSymbols.splice(randomIndex,1); //why not do this at line 43?
+        }
+    }
+    return rows;
+}
+
+const printRows = (rows) => {
+    for(const row of rows){
+        let rowString = "";
+        for (const [i,symbol] of row.entries()){
+            rowString += symbol;
+            if (i != row.length - 1){
+                rowString += " | ";
+            }
+        }
+        console.log(rowString);
+    }
+}
+
+const calcPnL = (rows, lines, bet) => {
+    let pnl = 0;
+    for (let row = 0; row < lines; row++){
+        pnl -= bet;
+        const symbols = rows[row];
+        let allSame = true;
+
+        for (const symbol of symbols){
+            if (symbol != symbols[0]){
+            allSame = false;
+            break;
+            }
+        }
+        if (allSame){
+            pnl += bet*(SYMBOL_VALUES[symbols[0]]+1);
+        }
+    }
+    return pnl;
 }
 
 const deposit = () => {
@@ -100,8 +143,28 @@ const getBettingAmount = (balance, lines) => {
 
 
 const game = () => {
-    const balance = deposit()
+    let balance = deposit()
+    while (true) {
+    
     const lines = getNumberOfLines();
     const bet = getBettingAmount(balance,lines);
+    const rows = spin();
+    printRows(rows);
+    const pnl = calcPnL(rows,lines, bet);
+    balance += pnl;
+    console.log(`Your profit/loss this round is $${pnl}`);
+    console.log(`Your balance after this round is $${balance}`);
+
+    if (balance<=0){
+        console.log("You ran out of money.")
+        return;
+    }
+    let playAgain = prompt("Play Again(y/n) [y]?");
+    if (playAgain.length === 0) 
+        playAgain = "y"
+
+    if (playAgain != "y") 
+        return;
+}
 }
 game()
