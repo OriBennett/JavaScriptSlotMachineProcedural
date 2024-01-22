@@ -83,21 +83,21 @@ const calcPnL = (rows, lines, bet) => {
 
 const deposit = () => {
     while (true) {
-    let depositAmount = prompt("Please enter your deposit amount[100]: ");
-    if (depositAmount.length === 0)
-        depositAmount = 100;
-    
-    const numberDepositAmount = parseFloat(depositAmount);
-    
-    if(!isNaN(numberDepositAmount)&&numberDepositAmount>0){
+        let depositAmount = prompt("Please enter your deposit amount[100]: ");
+        if (depositAmount.length === 0)
+            depositAmount = 100;
         
-        console.log("your initial deposit amount is " + numberDepositAmount);
-        return numberDepositAmount;
-    }
+        const numberDepositAmount = parseFloat(depositAmount);
+        
+        if(!isNaN(numberDepositAmount)&&numberDepositAmount>0){
+            
+            console.log("your initial deposit amount is " + numberDepositAmount);
+            return numberDepositAmount;
+        }
 
-    // if we get here - invalid input ask again
-    console.log("Invalid deposit amount, try again.");
-}
+        // if we get here - invalid input ask again
+        console.log("Invalid deposit amount, try again.");
+    }
     //return deposit(); // is there tail call optimization? Only if ECMA 6 javascript
     // while true might be better
 }
@@ -144,27 +144,26 @@ const getBettingAmount = (balance, lines) => {
 
 const game = () => {
     let balance = deposit()
-    while (true) {
-    
-    const lines = getNumberOfLines();
-    const bet = getBettingAmount(balance,lines);
-    const rows = spin();
-    printRows(rows);
-    const pnl = calcPnL(rows,lines, bet);
-    balance += pnl;
-    console.log(`Your profit/loss this round is $${pnl}`);
-    console.log(`Your balance after this round is $${balance}`);
+    while (true) {       
+        const lines = getNumberOfLines();
+        const bet = getBettingAmount(balance,lines);
+        const rows = spin();
+        printRows(rows);
+        const pnl = calcPnL(rows,lines, bet);
+        balance += pnl;
+        console.log(`Your profit/loss this round is $${pnl}`);
+        console.log(`Your balance after this round is $${balance}`);
 
-    if (balance<=0){
-        console.log("You ran out of money.")
-        return;
+        if (balance<=0){
+            console.log("You ran out of money.")
+            return;
+        }
+        let playAgain = prompt("Play Again(y/n) [y]?");
+        if (playAgain.length === 0) 
+            playAgain = "y"
+
+        if (playAgain != "y") 
+            return;
     }
-    let playAgain = prompt("Play Again(y/n) [y]?");
-    if (playAgain.length === 0) 
-        playAgain = "y"
-
-    if (playAgain != "y") 
-        return;
-}
 }
 game()
